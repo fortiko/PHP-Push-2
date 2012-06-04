@@ -378,7 +378,7 @@ class BackendLDAP extends BackendDiff {
 		}
 		if ($message->companyname)
 		{
-			$ldap["o"] = $message-companyname;
+			$ldap["o"] = $message->companyname;
 		}
 		if ($message->pagernumber)
 		{
