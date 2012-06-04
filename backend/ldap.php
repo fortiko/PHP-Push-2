@@ -127,7 +127,7 @@ class BackendLDAP extends BackendDiff {
 			$folder = explode(":", $base_dn);
 			if ($folder[0] == $folderid)
 			{
-				$base_dn = str_replace('%u', $this->user, $base_dn);
+				$base_dn = str_replace('%u', $this->user, $folder[1]);
 				$results = ldap_list($this->ldap_link, $base_dn, $filter, $attributes);
 				ZLog::Write(LOGLEVEL_DEBUG, sprintf("BackendLDAP->GetMessageList(): Got %s contacts in base_dn '%s'.", ldap_count_entries($this->ldap_link, $results), $base_dn));
 				$entries = ldap_get_entries($this->ldap_link, $results);
@@ -153,7 +153,7 @@ class BackendLDAP extends BackendDiff {
 			$folder = explode(":", $base_dn);
 			if ($folder[0] == $folderid)
 			{
-				$base_dn = str_replace('%u', $this->user, $base_dn);
+				$base_dn = str_replace('%u', $this->user, $folder[1]);
 				$result_id = ldap_list($this->ldap_link, $base_dn, "(entryUUID=".$id.")");
 				if ($result_id)
 				{
@@ -268,10 +268,12 @@ class BackendLDAP extends BackendDiff {
 		$base_dns = explode("|", LDAP_BASE_DNS);
 		foreach ($base_dns as $base_dn)
 		{
-			$base_dn = str_replace('%u', $this->user, $base_dn);
-			$result_id = ldap_list($this->ldap_link, $base_dn, "(entryUUID=".$id.")", array("modifyTimestamp"));
-			if ($result_id)
-			{
+			$folder = explode(":", $base_dn);
+			if ($folder[0] == $folderid) {
+				$base_dn = str_replace('%u', $this->user, $folder[1]);
+				$result_id = ldap_list($this->ldap_link, $base_dn, "(entryUUID=".$id.")", array("modifyTimestamp"));
+				if ($result_id)
+				{
 				$entry_id = ldap_first_entry($this->ldap_link, $result_id);
 				if ($entry_id)
 				{
@@ -282,6 +284,7 @@ class BackendLDAP extends BackendDiff {
 					$message["flags"] = "1";
 					return $message;
 				}
+			}
 			}
 		}
 	}
@@ -295,6 +298,7 @@ class BackendLDAP extends BackendDiff {
 			if ($folder[0] == $folderid)
 			{
 				$ldap_attributes = $this->_GenerateLDAPArray($message);
+	                        $base_dn = str_replace('%u', $this->user, $folder[1]);	
 				$result_id = ldap_list($this->ldap_link, $base_dn, "(entryUUID=".$id.")", array("modifyTimestamp"));
 				if ($result_id)
 				{
@@ -440,7 +444,7 @@ class BackendLDAP extends BackendDiff {
 			$folder = explode(":", $base_dn);
 			if ($folder[0] == $folderid)
 			{
-				$base_dn = str_replace('%u', $this->user, $base_dn);
+				$base_dn = str_replace('%u', $this->user, $folder[1]);
 				$result_id = ldap_list($this->ldap_link, $base_dn, "(entryUUID=".$id.")", array("entryUUID"));
 				if ($result_id)
 				{
